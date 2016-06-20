@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            #pctCalc {
+                border:black solid;
+            }
+            #results, #display {
+                display:flex;
+                flex-wrap:wrap;
+                justify-content:space-around;
+                text-align:center;
+            }
+            #results *, #display * {
+                background:lightgrey;
+                width:8em;
+                margin:0.5em 0.2em;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="pctCalc"><div id="display"><div id="pctInfo">% split calculator</div><input id='pct' placeholder='mm:ss'><div id="split">split/500m</div><div id="speed">m/s</div></div>
+            
+        <div id="results"></div></div>
+        
+        <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+        <script>window.jQuery || document.write('<script src="jquery-3.0.0.min.js"><\/script>')</script>
+        <script>
+            $("#pct").change(function() {
+                             $(".pct").remove();
+                             var car = $(this).val();
+                             
+                             if (!car.match(/^[0-60]:[0-5][0-9]$/i)) {
+                             $("#split").text("Please use the correct syntax");
+                             return 0;
+                             }
+                             
+                             $(this).val("");
+                             
+                             $("#split").text(car + "/500m");
+                             
+                             car = sec2speed(split2sec(car));
+                             $("#speed").text(car.toFixed(2) + "m/s");
+                             
+                             var pcts = percents(car);
+                             pcts = sec2split(pcts);
+                             addResults(pcts);
+                             
+                             });
+                             
+                             function split2sec(x) {
+                                 x = x.split(":");
+                                 return (x[0] * 60 + parseFloat(x[1]));
+                             }
+        
+        function sec2speed(x) {
+            return (500 / x);
+        }
+        
+        function percents(x) {
+            var y = {};
+            for (i = 2; i < 27; i++) {
+                var ix = i * 5;
+                y[ix] = 500 / (ix / 100 * x);
+            }
+            return y;
+        }
+        
+        function sec2split(x) {
+            for (i in x) {
+                var mm = parseInt(x[i] / 60);
+                var ss = Math.round(x[i] % 60);
+                if (ss == 60) {
+                    ss = 0;
+                    mm++;
+                }
+                if (ss < 10) {
+                    ss = "0" + ss.toString()
+                }
+                x[i] = mm + ":" + ss;
+            }
+            return x;
+        }
+        
+        function addResults(x) {
+            for (i in x) {
+                $("#results").append("<div class='pct'>" + i + "% &rarr; " + x[i] + "</div>");
+            }
+        }
+
+        </script>
+    </body>
+</html>
+
+
